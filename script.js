@@ -12,6 +12,7 @@ async function fetchData() {
   const data = await response.json();
   console.log(data); // Use the fetched data
 }
+const apiKey = process.env.SECRET_API_KEY; // Fetching the key
 
 fetchData();
 

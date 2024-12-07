@@ -7,6 +7,14 @@ const deleteChatButton = document.querySelector("#delete-chat-button");
 let userMessage = null;
 let isResponseGenerating = false;
 
+async function fetchData() {
+  const response = await fetch('/api/server'); // Calls the serverless function
+  const data = await response.json();
+  console.log(data); // Use the fetched data
+}
+
+fetchData();
+
 
 let API_URL = null;
 

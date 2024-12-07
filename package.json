@@ -4,7 +4,7 @@
   "description": "ADD YOUR API KEY TO MAKE IT RESPONSIVE, YOU CAN GET AN API KEY FOR FREE : https://ai.google.dev/gemini-api/docs/api-key",
   "main": "script.js",
   "scripts": {
-    "build": "echo 'Nothing to build!'"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",

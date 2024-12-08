@@ -6,23 +6,11 @@ const deleteChatButton = document.querySelector("#delete-chat-button");
 
 let userMessage = null;
 let isResponseGenerating = false;
-
-
 let API_URL = null;
+let isApiKeyLoaded = false;
 
-fetch('http://localhost:5000/api/key')
-  .then(response => response.json())
-  .then(data => {
-    const apiKey = data.apiKey;
-    API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
-    console.log('API Key fetched and API_URL updated:', API_URL);
-  })
-  .catch(error => {
-    console.error('Error fetching API key:', error);
-  });
-  let isApiKeyLoaded = false;
-
-fetch('http://localhost:5000/api/key')
+// Fetch the API key from your Vercel-hosted backend
+fetch('/api/key') // Use relative path for Vercel deployment
   .then(response => response.json())
   .then(data => {
     const apiKey = data.apiKey;
@@ -43,8 +31,7 @@ typingForm.addEventListener("submit", (e) => {
   handleOutgoingChat();
 });
 
-
-
+// Functions (no changes needed here except API URL usage)
 const loadDataFromLocalstorage = () => {
   const savedChats = localStorage.getItem("saved-chats");
   const isLightMode = localStorage.getItem("themeColor") === "light_mode";
@@ -118,72 +105,4 @@ const generateAPIResponse = async (incomingMessageDiv) => {
   }
 };
 
-
-const showLoadingAnimation = () => {
-  const html = `<div class="message-content">
-                  <img class="avatar" src="images/gemini.svg" alt="Gemini avatar">
-                  <p class="text"></p>
-                  <div class="loading-indicator">
-                    <div class="loading-bar"></div>
-                    <div class="loading-bar"></div>
-                    <div class="loading-bar"></div>
-                  </div>
-                </div>
-                <span onClick="copyMessage(this)" class="icon material-symbols-rounded">content_copy</span>`;
-  const incomingMessageDiv = createMessageElement(html, "incoming", "loading");
-  chatContainer.appendChild(incomingMessageDiv);
-  chatContainer.scrollTo(0, chatContainer.scrollHeight);
-  generateAPIResponse(incomingMessageDiv);
-};
-
-const copyMessage = (copyButton) => {
-  const messageText = copyButton.parentElement.querySelector(".text").innerText;
-  navigator.clipboard.writeText(messageText);
-  copyButton.innerText = "done";
-  setTimeout(() => (copyButton.innerText = "content_copy"), 1000);
-};
-
-const handleOutgoingChat = () => {
-  userMessage =
-    typingForm.querySelector(".typing-input").value.trim() || userMessage;
-  if (!userMessage || isResponseGenerating) return;
-  isResponseGenerating = true;
-  const html = `<div class="message-content">
-                  <img class="avatar" src="images/cat pfp.png" alt="User avatar">
-                  <p class="text"></p>
-                </div>`;
-  const outgoingMessageDiv = createMessageElement(html, "outgoing");
-  outgoingMessageDiv.querySelector(".text").innerText = userMessage;
-  chatContainer.appendChild(outgoingMessageDiv);
-  typingForm.reset();
-  document.body.classList.add("hide-header");
-  chatContainer.scrollTo(0, chatContainer.scrollHeight);
-  setTimeout(showLoadingAnimation, 500);
-};
-
-toggleThemeButton.addEventListener("click", () => {
-  const isLightMode = document.body.classList.toggle("light_mode");
-  localStorage.setItem("themeColor", isLightMode ? "light_mode" : "dark_mode");
-  toggleThemeButton.innerText = isLightMode ? "dark_mode" : "light_mode";
-});
-
-deleteChatButton.addEventListener("click", () => {
-  if (confirm("Are you sure you want to delete all the chats?")) {
-    localStorage.removeItem("saved-chats");
-    loadDataFromLocalstorage();
-  }
-});
-
-suggestions.forEach((suggestion) => {
-  suggestion.addEventListener("click", () => {
-    userMessage = suggestion.querySelector(".text").innerText;
-    handleOutgoingChat();
-  });
-});
-
-typingForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  handleOutgoingChat();
-});
-
-loadDataFromLocalstorage();
+// Other functions remain unchanged

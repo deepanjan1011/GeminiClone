@@ -33,10 +33,9 @@ fetch('/api/key')
     typingForm.querySelector("input").disabled = false;
   })
   .catch(error => {
-    console.error('Error fetching API key:', error); // Log the error message for better debugging
+    console.error('Error fetching API key:', error); 
     alert("There was an issue fetching the API key. Please try again later.");
   });
-
 
 // Function to handle outgoing chat (sending the message)
 const handleOutgoingChat = () => {
@@ -79,8 +78,7 @@ const showTypingEffect = (text, textElement, incomingMessageDiv) => {
   const words = text.split(" ");
   let currentWordIndex = 0;
   const typingInterval = setInterval(() => {
-    textElement.innerText +=
-      (currentWordIndex === 0 ? "" : " ") + words[currentWordIndex++];
+    textElement.innerText += (currentWordIndex === 0 ? "" : " ") + words[currentWordIndex++];
     incomingMessageDiv.querySelector(".icon").classList.add("hide");
     if (currentWordIndex === words.length) {
       clearInterval(typingInterval);
@@ -115,9 +113,8 @@ const generateAPIResponse = async (incomingMessageDiv) => {
       }),
     });
 
-    // Handling API errors more robustly
     if (!response.ok) {
-      throw new Error(`API error: ${errorResponse.message || 'Unknown error'}`);
+      throw new Error(`API error: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -125,10 +122,7 @@ const generateAPIResponse = async (incomingMessageDiv) => {
       throw new Error("No response from API.");
     }
 
-    const apiResponse = data.candidates[0].content.parts[0].text.replace(
-      /\*\*(.*?)\*\*/g,
-      "$1"
-    );
+    const apiResponse = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1");
     showTypingEffect(apiResponse, textElement, incomingMessageDiv);
   } catch (error) {
     isResponseGenerating = false;
@@ -160,4 +154,17 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedChats) {
     chatContainer.innerHTML = savedChats;
   }
+});
+
+// Event listener for message sending
+sendMessageButton.addEventListener("click", handleOutgoingChat);
+typingForm.addEventListener("submit", (e) => e.preventDefault());
+
+// Handle suggestion click
+suggestions.forEach((suggestion) => {
+  suggestion.addEventListener("click", (e) => {
+    const messageText = suggestion.querySelector(".text").innerText;
+    document.querySelector(".typing-input").value = messageText;
+    handleOutgoingChat();
+  });
 });
